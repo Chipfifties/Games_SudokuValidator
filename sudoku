@@ -1,0 +1,82 @@
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int size = (int) Math.pow(sc.nextInt(), 2); // Getting length of array
+        int sum = size * (size + 1) / 2; // Sum of digit sequence from 1 to n^2
+        int[][] sudoku = new int[size][size];
+
+        // Filling sudoku array with integers
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
+                sudoku[row][col] = sc.nextInt();
+            }
+        }
+        // Validating sudoku
+        boolean validateSudoku = sumValidate(size, sum, sudoku) && duplicateCheck(size, sudoku)
+                && boxCheck(size, sum, sudoku);
+        System.out.println(validateSudoku ? "YES" : "NO");
+
+    }
+
+    // Checking if sum of all elements in the rows equals sum of 1...n^2 (length of array)
+    public static boolean sumValidate(int size, int sum, int[][] array) {
+        for (int row = 0; row < size; row++) {
+            int rowSum = 0;
+            int colSum = 0;
+            for (int col = 0; col < size; col++) {
+                rowSum += array[row][col];
+                colSum += array[col][row];
+            }
+            if (rowSum != sum || colSum != sum) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Checking for duplicate numbers in rows and columns
+    public static boolean duplicateCheck(int size, int[][] array) {
+        for (int row = 0; row < size; row++) {
+            for (int col = 1; col < size - 1; col++) {
+                if (array[row][col - 1] == array[row][col]) {
+                    return false;
+                }
+                if (array[col - 1][row] == array[col][row]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // Checking for sum of elements and duplicate numbers in each of the smaller boxes
+    public static boolean boxCheck(int size, int sum, int[][] array) {
+        int[] box = new int[size];
+        int boxSize = (int) Math.sqrt(size);
+
+        // Filling new box array
+        for (int boxIndex = 0; boxIndex <= size; boxIndex += boxSize) {
+            int realSum = 0;
+            int boxElementCount = 0;
+            for (int row = boxIndex; row < boxSize; row++) {
+                for (int col = boxIndex; col < boxSize; col++) {
+                    box[boxElementCount++] = array[row][col];
+                }
+            }
+            // Checking sum
+            for (int value : box) {
+                realSum += value;
+            }
+            // Checking for duplicate numbers
+            for (int i = 0; i < boxSize - 1; i++) {
+                if (box[i] == box[i + 1]) {
+                    return false;
+                }
+            }
+            if (realSum != sum) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
